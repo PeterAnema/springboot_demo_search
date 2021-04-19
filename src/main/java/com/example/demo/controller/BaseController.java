@@ -9,7 +9,7 @@ public class BaseController {
 
     @GetMapping("/")
     public ResponseEntity<Object> saySomethying() {
-        return ResponseEntity.ok("Have a good day!!!!");
+        return ResponseEntity.ok("Have a good everything!!!!");
     }
 
 }
