@@ -4,8 +4,6 @@
 
 Wordt initieel opgeleverd met H2 database.
 
-## Application.properties
-
 Pas applications.properties aan voor het gebruik van Postgresql ....
 * Pas database server aan
 * Pas database user aan
@@ -13,14 +11,14 @@ Pas applications.properties aan voor het gebruik van Postgresql ....
 
 ## Endpoints
 
-* GET https://localhost:8080/books<br>
-  To get all books.
+* GET https://localhost:8080/books
+  * To get all books.
   
 
 * GET https://localhost:8080/books/search?title=book1&author=A&genre=sf,thriller
-  To search for books on title, author, publisher or genre.
-  All search terms are optional.
-  Searching on genre allows multiple genres seperated by a comma.
+  * To search for books on title, author, publisher or genre.
+  * All search terms are optional.
+  * Searching on genre allows multiple genres seperated by a comma.
   
 ## Custom Query in BookRepository
 
