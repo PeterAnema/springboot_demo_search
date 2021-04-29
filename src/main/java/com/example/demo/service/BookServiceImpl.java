@@ -3,11 +3,15 @@ package com.example.demo.service;
 import com.example.demo.domein.Book;
 import com.example.demo.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.example.demo.service.BookSpecifications.*;
+import static org.springframework.data.jpa.domain.Specification.where;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -22,25 +26,33 @@ public class BookServiceImpl implements BookService {
     public List<Book> getBooksByFilter(Optional<String> title,
                                        Optional<String> author,
                                        Optional<String> publisher,
-                                       Optional<String> genre) {
+                                       Optional<String> genre,
+                                       Optional<String> id) {
 
-        List<String> genres = new ArrayList<>();
+        List<String> genres = null;
         if (genre.isPresent() && !genre.get().isEmpty()) {
-            for (String g: genre.get().split(",")) {
-                genres.add(g.toLowerCase().trim());
+            genres = new ArrayList<>();
+            for (String s : genre.get().split(",")) {
+                genres.add(s.trim().toLowerCase());
             }
         }
-        else {
-            genres = new ArrayList<>();
+
+        List<Long> ids = null;
+        if (id.isPresent() && !id.get().isEmpty()) {
+            ids = new ArrayList<>();
+            for (String s : id.get().split(",")) {
+                ids.add(Long.parseLong(s.trim()));
+            }
         }
 
-        return bookRepository.findBookByFilterValues(
-                title.orElse("").toLowerCase().trim(),
-                author.orElse("").toLowerCase().trim(),
-                publisher.orElse("").toLowerCase().trim(),
-                genres);
+        return bookRepository.findAll(
+                where(withTitle(title.orElse(null)))
+                .and(withAuthor(author.orElse(null)))
+                .and(withPublisher(publisher.orElse(null)))
+                .and(withGenres(genres))
+                .and(withIds(ids))
+        );
+
     }
-
-
 
 }

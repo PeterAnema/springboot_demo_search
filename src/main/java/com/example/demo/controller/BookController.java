@@ -25,11 +25,12 @@ public class BookController {
     }
 
     @GetMapping("/books/search")
-    public ResponseEntity<Object> getBooksByFilter(@RequestParam(name="title", defaultValue="") Optional<String> title,
-                                                   @RequestParam(name="author", defaultValue="") Optional<String>  author,
-                                                   @RequestParam(name="publisher", defaultValue="") Optional<String>  publisher,
-                                                   @RequestParam(name="genre", defaultValue="") Optional<String>  genre) {
-            List<Book> books = bookService.getBooksByFilter(title, author, publisher, genre);
+    public ResponseEntity<Object> getBooksByFilter(@RequestParam(name="title") Optional<String> title,
+                                                   @RequestParam(name="author") Optional<String>  author,
+                                                   @RequestParam(name="publisher") Optional<String>  publisher,
+                                                   @RequestParam(name="genre") Optional<String>  genre,
+                                                   @RequestParam(name="id") Optional<String>  id) {
+            List<Book> books = bookService.getBooksByFilter(title, author, publisher, genre, id);
         return ResponseEntity.ok(books);
     }
 

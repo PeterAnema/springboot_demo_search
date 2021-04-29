@@ -15,10 +15,10 @@ Pas applications.properties aan voor het gebruik van Postgresql ....
   * To get all books.
   
 
-* GET https://localhost:8080/books/search?title=book1&author=A&genre=sf,thriller
-  * To search for books on title, author, publisher or genre.
+* GET https://localhost:8080/books/search?title=book1&author=A&genre=sf,thriller&id=1,2
+  * To search for books on title, author, publisher, genre or id.
   * All search terms are optional.
-  * Searching on genre allows multiple genres seperated by a comma.
+  * Searching on genre or id allows multiple genres seperated by a comma.
   
 ## Custom Query in BookRepository
 
@@ -27,13 +27,15 @@ Pas applications.properties aan voor het gebruik van Postgresql ....
             "WHERE (:title = '' OR lower(b.title) LIKE %:title%) " +
             "AND (:author = '' OR lower(b.author) = :author) " +
             "AND (:publisher = '' OR lower(b.publisher) = :publisher) " +
-            "AND (COALESCE(:genres, NULL) IS NULL OR lower(b.genre) in :genres)",
+            "AND (COALESCE(:genres, NULL) IS NULL OR lower(b.genre) in :genres)" +
+            "AND (COALESCE(:ids, NULL) IS NULL OR id in :ids)",
             nativeQuery = true
     )
     List<Book> findBookByFilterValues(@Param("title") String title,
                                       @Param("author") String author,
                                       @Param("publisher") String publisher,
-                                      @Param("genres") List<String> genres);
+                                      @Param("genres") List<String> genres,
+                                      @Param("ids") List<Long> ids);
 ```
 
 ## BookServiceImpl
@@ -42,22 +44,28 @@ Pas applications.properties aan voor het gebruik van Postgresql ....
     public List<Book> getBooksByFilter(Optional<String> title,
                                        Optional<String> author,
                                        Optional<String> publisher,
-                                       Optional<String> genre) {
+                                       Optional<String> genre,
+                                       Optional<String> id) {
 
         List<String> genres = new ArrayList<>();
         if (genre.isPresent() && !genre.get().isEmpty()) {
-            for (String g: genre.get().split(",")) {
-                genres.add(g.toLowerCase().trim());
+            for (String s: genre.get().split(",")) {
+                genres.add(s.trim().toLowerCase());
             }
         }
-        else {
-            genres = new ArrayList<>();
+
+        List<Long> ids = new ArrayList<>();
+        if (id.isPresent() && !id.get().isEmpty()) {
+            for (String s: id.get().split(",")) {
+                ids.add(Long.parseLong(s.trim()));
+            }
         }
 
         return bookRepository.findBookByFilterValues(
                 title.orElse("").toLowerCase().trim(),
                 author.orElse("").toLowerCase().trim(),
                 publisher.orElse("").toLowerCase().trim(),
-                genres);
+                genres,
+                ids);
     }
 ```
